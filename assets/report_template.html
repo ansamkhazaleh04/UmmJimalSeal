@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UmmJimalSeal Report - %%FOLDER%%</title>
+<style>
+  :root {
+    --basalt: #1a1a1a; --basalt-light: #2d2d2d; --stone: #8b7d6b;
+    --sunset: #d97706; --sunset-light: #f59e0b; --green: #22c55e;
+    --red: #ef4444; --amber: #f59e0b; --text: #e5e5e5; --muted: #9ca3af;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--basalt); color: var(--text); line-height: 1.6; }
+  .hero { position: relative; height: 400px; overflow: hidden; background: linear-gradient(180deg, transparent 40%, var(--basalt) 100%); }
+  .hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+  .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px; background: linear-gradient(0deg, var(--basalt) 20%, transparent); }
+  .hero-overlay h1 { font-size: 2.5rem; color: var(--sunset-light); margin-bottom: 8px; text-shadow: 0 2px 20px rgba(0,0,0,0.8); }
+  .hero-overlay .loc { color: var(--stone); font-size: 0.95rem; letter-spacing: 1px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 30px; }
+  .verdict { display: flex; align-items: center; gap: 25px; padding: 30px; margin: -40px 0 40px; background: var(--basalt-light); border-radius: 12px; border-left: 6px solid var(--green); position: relative; z-index: 10; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+  .verdict.bad { border-left-color: var(--red); }
+  .stamp { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--green); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: var(--green); text-align: center; flex-shrink: 0; transform: rotate(-12deg); background: rgba(34, 197, 94, 0.1); }
+  .verdict.bad .stamp { border-color: var(--red); color: var(--red); background: rgba(239, 68, 68, 0.1); }
+  .verdict h2 { font-size: 1.8rem; color: var(--green); }
+  .verdict.bad h2 { color: var(--red); }
+  .verdict p { color: var(--muted); margin-top: 5px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 40px; }
+  .stat { background: var(--basalt-light); padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #333; }
+  .stat .num { font-size: 2rem; font-weight: bold; color: var(--sunset-light); }
+  .stat .label { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+  .stat.ok .num { color: var(--green); }
+  .stat.bad .num { color: var(--red); }
+  .stat.warn .num { color: var(--amber); }
+  .files { background: var(--basalt-light); border-radius: 8px; padding: 20px; margin-bottom: 40px; font-family: monospace; font-size: 0.85rem; max-height: 400px; overflow-y: auto; }
+  .row { display: flex; gap: 15px; padding: 8px 0; border-bottom: 1px solid #333; }
+  .row:last-child { border-bottom: none; }
+  .c { font-weight: bold; width: 90px; flex-shrink: 0; }
+  .p { flex: 1; color: var(--text); }
+  .h { color: var(--muted); font-size: 0.8rem; }
+  .row.ok .c { color: var(--green); }
+  .row.bad .c { color: var(--red); }
+  .row.warn .c { color: var(--amber); }
+  .more { color: var(--muted); padding: 10px; text-align: center; font-style: italic; }
+  .section-title { font-size: 1.5rem; color: var(--sunset-light); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--stone); }
+  .timeline { list-style: none; margin-bottom: 40px; }
+  .timeline li { padding: 20px; margin-bottom: 10px; background: var(--basalt-light); border-radius: 8px; border-left: 4px solid var(--sunset); }
+  .timeline .when { color: var(--sunset-light); font-weight: bold; font-size: 0.9rem; }
+  .timeline h4 { color: var(--text); margin: 5px 0; }
+  .timeline p { color: var(--muted); font-size: 0.95rem; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
+  .facts dt { color: var(--sunset-light); font-weight: bold; font-size: 0.9rem; }
+  .facts dd { color: var(--text); margin-bottom: 15px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+  .card { background: var(--basalt-light); padding: 25px; border-radius: 8px; border-top: 3px solid var(--sunset); }
+  .card h3 { color: var(--sunset-light); margin-bottom: 10px; font-size: 1.2rem; }
+  .card .unesco { color: var(--muted); font-size: 0.9rem; margin-bottom: 10px; font-style: italic; }
+  .card .tool { color: var(--text); font-size: 0.95rem; }
+  .card code { background: var(--basalt); padding: 2px 6px; border-radius: 4px; color: var(--sunset-light); }
+  .photo { margin: 40px 0; border-radius: 12px; overflow: hidden; }
+  .photo img { width: 100%; display: block; }
+  .cmd { background: #0a0a0a; color: var(--green); padding: 15px 20px; border-radius: 8px; font-family: monospace; margin-bottom: 40px; border: 1px solid #333; overflow-x: auto; }
+  .cmd::before { content: '$ '; color: var(--sunset); }
+  .sources { color: var(--muted); font-size: 0.85rem; padding: 20px 0; border-top: 1px solid #333; }
+  .sources a { color: var(--sunset-light); text-decoration: none; }
+  footer { text-align: center; padding: 30px; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  %%HERO_IMG%%
+  <div class="hero-overlay">
+    <h1>%%VERDICT%%</h1>
+    <div class="loc">%%SITE_NAME%% - %%COORDS%%</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="verdict %%CLASS%%">
+    <div class="stamp">%%STAMP_LABEL%%</div>
+    <div>
+      <h2>%%VERDICT%%</h2>
+      <p>%%VERDICT_SUB%%</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat ok"><div class="num">%%N_INTACT%%</div><div class="label">Intact</div></div>
+    <div class="stat bad"><div class="num">%%N_MOD%%</div><div class="label">Modified</div></div>
+    <div class="stat warn"><div class="num">%%N_ADD%%</div><div class="label">Added</div></div>
+    <div class="stat bad"><div class="num">%%N_REM%%</div><div class="label">Removed</div></div>
+  </div>
+
+  <div class="cmd">%%CMD%%</div>
+
+  <h2 class="section-title">File Integrity Report</h2>
+  <div class="files">%%FILES%%</div>
+
+  <h2 class="section-title">The Black Oasis: Umm al-Jimal</h2>
+  <p style="color: var(--muted); margin-bottom: 20px;">%%WHERE%%</p>
+  <p style="color: var(--muted); margin-bottom: 20px;">%%UNESCO%%</p>
+
+  %%PHOTO2%%
+
+  <ul class="timeline">%%TIMELINE%%</ul>
+
+  <h2 class="section-title">Site Facts</h2>
+  <dl class="facts">%%FACT_TABLE%%</dl>
+
+  <h2 class="section-title">Authenticity and Integrity: UNESCO vs This Tool</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>Authenticity</h3>
+      <div class="unesco">%%AUTH_UNESCO%%</div>
+      <div class="tool">%%AUTH_TOOL%%</div>
+    </div>
+    <div class="card">
+      <h3>Integrity</h3>
+      <div class="unesco">%%INTEG_UNESCO%%</div>
+      <div class="tool">%%INTEG_TOOL%%</div>
+    </div>
+  </div>
+
+  <div class="sources">%%SOURCES%%</div>
+
+</div>
+
+<footer>
+  UmmJimalSeal - SHA-256 and Ed25519 - Integrity and Authenticity<br>
+  Protected to stay authentic, sealed to stay original.
+</footer>
+
+</body>
+</html>
